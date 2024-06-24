@@ -1,0 +1,27 @@
+package views
+
+import "bishamon/views/components"
+
+templ Login() {
+	<!DOCTYPE html>
+	<html lang="en">
+		@components.Head()
+		<body hx-ext="response-targets">
+			<main class="container">
+				<h1>Login</h1>
+				<form hx-post="/api/login" hx-trigger="submit" hx-ext="json-enc" hx-target-error="#login-form-errors">
+					<label for="username">Username</label>
+					<input id="username" name="username" type="text" required/>
+					<label for="password">Password</label>
+					<input id="password" name="password" type="password" required/>
+					<div id="login-form-errors"></div>
+					<button type="submit" class="primary">Log In</button>
+				</form>
+			</main>
+		</body>
+	</html>
+}
+
+templ LoginError(msg string) {
+	<p>{ msg }</p>
+}

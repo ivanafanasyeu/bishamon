@@ -1,0 +1,36 @@
+package views
+
+import "bishamon/views/components"
+
+templ Index() {
+	<!DOCTYPE html>
+	<html lang="en">
+		@components.Head() {
+			<link rel="stylesheet" href="/css/index.css"/>
+		}
+		<body>
+			<section class="container total-balance">
+				<h1 hx-get="/api/accounts/totalbalance" hx-trigger="load" class="total-balance-title"></h1>
+				<p>Current available</p>
+			</section>
+			<section class="container">
+				...chart will be here
+			</section>
+			<main class="container">
+				<section hx-get="/api/transactions/today" hx-target="#today-transactions" hx-swap="outerHTML">
+					<h3>Today</h3>
+					<div id="today-transactions"></div>
+				</section>
+				<section hx-get="/api/transactions/yesterday" hx-target="#yesterday-transactions" hx-swap="outerHTML">
+					<h3>Yesterday</h3>
+					<div id="yesterday-transactions"></div>
+				</section>
+				<section hx-get="/api/transactions/before" hx-target="#before-transactions" hx-swap="outerHTML">
+					<h3>Before</h3>
+					<div id="before-transactions"></div>
+				</section>
+			</main>
+			@components.Nav()
+		</body>
+	</html>
+}

@@ -1,0 +1,68 @@
+package forms
+
+import "bishamon/shared/types"
+import "fmt"
+
+func getEditAdd(account *types.Account, editRes any, addRes any) any {
+	if account != nil {
+		return editRes
+	}
+
+	return addRes
+}
+
+func getName(account *types.Account) string {
+	if account == nil {
+		return ""
+	}
+
+	return account.Name
+}
+
+func getRequestAttributes(account *types.Account) templ.Attributes {
+	if account != nil {
+		return templ.Attributes{"hx-patch": fmt.Sprintf("/api/accounts/%s", account.ID.Hex())}
+	}
+
+	return templ.Attributes{"hx-post": "/api/accounts"}
+}
+
+templ FormAccount(account *types.Account) {
+	<form
+		{ getRequestAttributes(account)... }
+		data-form-type="form-account"
+		hx-target={ getEditAdd(account, "#response-edit-account", "#response-create-account").(string) }
+		hx-trigger="submit"
+		hx-target-error={ getEditAdd(account, "#form-errors-edit-account", "#form-errors-add-account").(string) }
+		hx-ext="json-enc"
+	>
+		<fieldset>
+			<label for="name">
+				Account name
+				<input type="text" name="name" id="name" min="3" max="30" required value={ getName(account) }/>
+			</label>
+			<label for="isInTotalBalance">
+				<input
+					type="checkbox"
+					name="isInTotalBalance"
+					id="isInTotalBalance"
+					if account != nil {
+						if account.IsInTotalBalance {
+							checked
+						}
+					} else {
+						checked
+					}
+				/>
+				Include in total balance?
+			</label>
+		</fieldset>
+		<div id={ getEditAdd(account, "form-errors-edit-account", "form-errors-add-account").(string) }></div>
+		<div id={ getEditAdd(account, "response-edit-account", "response-create-account").(string) }></div>
+		<button type="submit">{ getEditAdd(account, "Edit account", "Add account").(string) }</button>
+	</form>
+}
+
+templ FormAccountError(msg string) {
+	<p>{ msg }</p>
+}

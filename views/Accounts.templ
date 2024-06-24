@@ -1,0 +1,89 @@
+package views
+
+import "bishamon/views/components"
+import "bishamon/shared/types"
+import "bishamon/shared/utils"
+import "bishamon/views/components/forms"
+import "fmt"
+
+templ AddAccountDialog() {
+	<dialog id="dialog-add-account">
+		<article>
+			<header class="account-dialog-header">
+				<h3>Add account</h3>
+				<button id="close" class="outline contrast">close</button>
+			</header>
+			@forms.FormAccount(nil)
+		</article>
+	</dialog>
+}
+
+templ EditAccountDialog(account *types.Account) {
+	<article>
+		<header class="account-dialog-header">
+			<h3>Edit account</h3>
+			<button id="close-edit-account-dialog" class="outline contrast">close</button>
+		</header>
+		@forms.FormAccount(account)
+		<script>
+			(()=>{
+				document.getElementById("close-edit-account-dialog").addEventListener("click", ()=>{
+					document.getElementById("dialog-edit").close();
+				})
+			})();
+		</script>
+	</article>
+}
+
+templ AccountsCards(accounts []types.Account) {
+	<main class="container accounts-grid" hx-get="/accounts?listOnly=true" hx-trigger="accountCreated from:body, accountUpdated from:body" hx-swap="outerHTML">
+		for _, account := range accounts {
+			<article id={ fmt.Sprintf(`account-%s`, account.ID.Hex()) } class="account-card">
+				<h5 scope="row">{ account.Name }</h5>
+				<p>{ utils.FormatNumberToCurrency(account.Balance) }</p>
+				<p>
+					{ fmt.Sprintf("%s", func(v bool) string {
+						if(v){
+							return "In the total balance"
+						}
+
+						return "Not included in the total balance"
+					}(account.IsInTotalBalance)) }
+				</p>
+				<div class="btns">
+					<button
+						class="outline"
+						hx-get={ fmt.Sprintf("/api/accounts/modal/%s", account.ID.Hex()) }
+						hx-target="#dialog-edit"
+						hx-swap="innerHTML"
+					>Edit</button>
+					<button
+						class="outline secondary"
+						hx-delete={ fmt.Sprintf("/api/accounts/%s", account.ID.Hex()) }
+						hx-target={ fmt.Sprintf(`#account-%s`, account.ID.Hex()) }
+						hx-swap="outerHTML"
+					>Delete</button>
+				</div>
+			</article>
+		}
+	</main>
+}
+
+templ Accounts(accounts []types.Account) {
+	<!DOCTYPE html>
+	<html lang="en">
+		@components.Head() {
+			<link rel="stylesheet" href="/css/accounts.css"/>
+		}
+		<body hx-ext="response-targets">
+			<section class="container">
+				<h1>Accounts</h1>
+				<button id="btn-add-account" type="button">Add account</button>
+			</section>
+			@AccountsCards(accounts)
+			@components.Nav()
+			@AddAccountDialog()
+			<script src="/js/accounts.js" defer></script>
+		</body>
+	</html>
+}

@@ -1,0 +1,7 @@
+.env
+.env.production
+.env.dev
+
+# go build
+bin
+tmp

@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  mongo-bishamon-dev:
+    image: mongo:7.0
+    ports:
+      - ${MONGODB_PORT}:27017
+    volumes:
+      - mongodata-bishamon-dev:/data/db
+    env_file:
+      - .env
+
+volumes:
+  mongodata-bishamon-dev:
+    driver: local

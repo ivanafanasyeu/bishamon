@@ -1,0 +1,8 @@
+.total-balance {
+	padding-top: 2rem;
+	text-align: center;
+
+	.total-balance-title {
+		margin-bottom: 0;
+	}
+}
